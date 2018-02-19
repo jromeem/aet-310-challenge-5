@@ -2,7 +2,7 @@
 // Challenge 5: Algorithms
 
 // global variables
-int NUM_SCENES = 15;
+int NUM_SCENES = 6;
 int SCENE_COUNTER = 0;
 
 // the list that contains all the scenes
@@ -13,26 +13,29 @@ void setup() {
   noStroke();
   
   // initalize the SCENE_LIST array
-  for (int s = 0; s < NUM_SCENES; s++) {
-    
+  for (int s = 0; s < NUM_SCENES; s++) {    
     // create a white background for the title scene
     if (s == 0) {
-      color sceneColor = color(255, 255, 255);
+      color startSceneColor = color(255, 255, 255);
       int numberActors = 0;
-      SCENES_LIST[s] = new Scene(sceneColor, numberActors); 
+      SCENES_LIST[s] = new Scene(startSceneColor, numberActors); 
     }
     
     // create a black background for the finishing scene
     else if (s == NUM_SCENES-1) {
-      color sceneColor = color(0, 0, 0);
+      color finSceneColor = color(0, 0, 0);
       int numberActors = 0;
-      SCENES_LIST[s] = new Scene(sceneColor, numberActors); 
+      SCENES_LIST[s] = new Scene(finSceneColor, numberActors); 
     }
     
     // create a new scene for the rest
     else {
-      int numberActors = 4;
-      SCENES_LIST[s] = new Scene(numberActors);
+      int numberActors = 2;
+      int randomR = int(random(100, 150));
+      int randomG = int(random(100, 150));
+      int randomB = int(random(100, 150));
+      color sceneColor = color(randomR, randomG, randomB);
+      SCENES_LIST[s] = new Scene(sceneColor, numberActors);
     }
   }
 }
@@ -59,30 +62,13 @@ class Scene {
   color backgroundColor;
   int numActors;
   Actor[] actors;
-  
-  Scene (int nActors) {
-    
-    // initialize the actor list
-    this.numActors = nActors;
-    actors = new Actor[this.numActors];
-    if (this.numActors > 0) {
-      this.initalizeActors();
-    }
-    
-    // initialize the scene background color
-    int randomR = int(random(100, 150));
-    int randomG = int(random(100, 150));
-    int randomB = int(random(100, 150));
-    this.backgroundColor = color(randomR, randomG, randomB);
-  }
 
   Scene (color bgColor, int nActors) {
-    
     // initialize the actor list
     this.numActors = nActors;
     actors = new Actor[this.numActors];
     if (this.numActors > 0) {
-      this.initalizeActors();
+      this.castActors();
     }
     
     // set the background scene color
@@ -90,12 +76,25 @@ class Scene {
   }
   
   // class function to intialize all the actors
-  void initalizeActors() { 
+  void castActors() { 
     for (int a = 0; a < this.numActors; a++)  {
+      
+      // first actor is the main character
       if (a == 0) {
-        this.actors[a] = new Actor(color(255, 0, 0), 200);
+        // set the main actor's color and size
+        int mainActorSize = 200;
+        color mainActorColor = color(255, 0, 0);
+        this.actors[a] = new Actor(mainActorColor, mainActorSize);
+        
+      // everyone else is a minor character
       } else {
-        this.actors[a] = new Actor();
+        // create random color values and size for minor characters
+        int randomR = int(random(150, 200));
+        int randomG = int(random(150, 200));
+        int randomB = int(random(150, 200));
+        color minorActorColor = color(randomR, randomG, randomB);
+        int minorActorSize = int(random(50, 70));
+        this.actors[a] = new Actor(minorActorColor, minorActorSize);
       }
     } 
   }
@@ -118,38 +117,19 @@ class Actor {
   int actorSize;
   int posX, posY;
   
-  // first constructor
-  Actor () {
-    // create random color values for the actor's color
-    int randomR = int(random(150, 200));
-    int randomG = int(random(150, 200));
-    int randomB = int(random(150, 200));
-    this.fillColor = color(randomR, randomG, randomB);
-    
-    // create random positional values for the actor's location
-    int randomX = int(random(this.actorSize, width-this.actorSize));
-    int randomY = int(random(this.actorSize, height-this.actorSize));
-    this.posX = randomX;
-    this.posY = randomY;
-    
-    // make the actor a random size
-    this.actorSize = int(random(50, 70));
-  }
-  
-  // second constructor
   Actor(color fColor, int aSize) {
-    
-    // create random positional values for the actor's location
-    int randomX = int(random(this.actorSize, width-this.actorSize));
-    int randomY = int(random(this.actorSize, height-this.actorSize));
-    this.posX = randomX;
-    this.posY = randomY;
-    
     // set the actor's fill color and size
     this.fillColor = fColor;
     this.actorSize = aSize;
+    
+    // create random positional values for the actor's location
+    int randomX = int(random(this.actorSize, width-this.actorSize));
+    int randomY = int(random((height/2)-(this.actorSize), (height/2)+(this.actorSize)));
+    println((height/2)-(this.actorSize));
+    this.posX = randomX;
+    this.posY = randomY;
   }
-  
+   
   void displayActor() {
     fill(this.fillColor);
     ellipse(this.posX, this.posY, this.actorSize, this.actorSize);
